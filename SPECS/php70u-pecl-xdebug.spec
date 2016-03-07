@@ -16,8 +16,8 @@
 
 Name:           php-pecl-xdebug
 Summary:        PECL package for debugging PHP scripts
-Version:        2.3.3
-Release:        3%{?dist}
+Version:        2.4.0
+Release:        1%{?dist}
 Source0:        http://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
 
 # The Xdebug License, version 1.01
@@ -176,6 +176,9 @@ done
 
 
 %changelog
+* Mon Mar 07 2016 Carl George <carl.george@rackspace.com> - 2.4.0-1
+- Latest upstream
+
 * Sat Feb 13 2016 Remi Collet <remi@fedoraproject.org> - 2.3.3-3
 - drop scriptlets (replaced by file triggers in php-pear)
 - cleanup
