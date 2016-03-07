@@ -1,3 +1,5 @@
+# IUS spec file for php70u-pecl-xdebug, forked from:
+#
 # Fedora spec file for php-pecl-xdebug
 #
 # Copyright (c) 2010-2016 Remi Collet
@@ -13,11 +15,12 @@
 %global with_zts  0%{?__ztsphp:1}
 # XDebug should be loaded after opcache
 %global ini_name  15-%{pecl_name}.ini
+%global php_base php70u
 
-Name:           php-pecl-xdebug
+Name:           %{php_base}-pecl-xdebug
 Summary:        PECL package for debugging PHP scripts
 Version:        2.4.0
-Release:        1%{?dist}
+Release:        1.ius%{?dist}
 Source0:        http://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
 
 # The Xdebug License, version 1.01
@@ -26,18 +29,38 @@ License:        PHP
 Group:          Development/Languages
 URL:            http://xdebug.org/
 
-BuildRequires:  php-pear  > 1.9.1
-BuildRequires:  php-devel > 5.4
+BuildRequires:  %{php_base}-pear
+BuildRequires:  %{php_base}-devel
 BuildRequires:  libedit-devel
 BuildRequires:  libtool
 
 Requires:       php(zend-abi) = %{php_zend_api}
 Requires:       php(api) = %{php_core_api}
 
+# provide the stock name
+Provides:       php-pecl-%{pecl_name} = %{version}
+Provides:       php-pecl-%{pecl_name}%{?_isa} = %{version}
+
+# provide the stock and IUS names without pecl
 Provides:       php-%{pecl_name} = %{version}
 Provides:       php-%{pecl_name}%{?_isa} = %{version}
+Provides:       %{php_base}-%{pecl_name} = %{version}
+Provides:       %{php_base}-%{pecl_name}%{?_isa} = %{version}
+
+# provide the stock and IUS names in pecl() format
 Provides:       php-pecl(Xdebug) = %{version}
 Provides:       php-pecl(Xdebug)%{?_isa} = %{version}
+Provides:       %{php_base}-pecl(Xdebug) = %{version}
+Provides:       %{php_base}-pecl(Xdebug)%{?_isa} = %{version}
+
+# conflict with the stock name
+Conflicts:      php-pecl-%{pecl_name} < %{version}
+
+%if 0%{?fedora} < 20 && 0%{?rhel} < 7
+# Filter shared private
+%{?filter_provides_in: %filter_provides_in %{_libdir}/.*\.so$}
+%{?filter_setup}
+%endif
 
 
 %description
@@ -176,8 +199,9 @@ done
 
 
 %changelog
-* Mon Mar 07 2016 Carl George <carl.george@rackspace.com> - 2.4.0-1
+* Mon Mar 07 2016 Carl George <carl.george@rackspace.com> - 2.4.0-1.ius
 - Latest upstream
+- Port from Fedora to IUS
 
 * Sat Feb 13 2016 Remi Collet <remi@fedoraproject.org> - 2.3.3-3
 - drop scriptlets (replaced by file triggers in php-pear)
