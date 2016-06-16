@@ -109,6 +109,13 @@ cd ..
 cp -pr NTS ZTS
 %endif
 
+cat > %{ini_name} << EOF
+; Enable %{pecl_name} extension module
+zend_extension=%{pecl_name}.so
+
+; see http://xdebug.org/docs/all_settings
+EOF
+
 
 %build
 cd NTS
@@ -148,25 +155,13 @@ install -Dpm 755 NTS/debugclient/debugclient \
 install -Dpm 644 package.xml %{buildroot}%{pecl_xmldir}/%{pecl_name}.xml
 
 # install config file
-install -d %{buildroot}%{php_inidir}
-cat << 'EOF' | tee %{buildroot}%{php_inidir}/%{ini_name}
-; Enable xdebug extension module
-zend_extension=%{pecl_name}.so
-
-; see http://xdebug.org/docs/all_settings
-EOF
+install -Dpm 644 %{ini_name} %{buildroot}%{php_inidir}/%{ini_name}
 
 %if %{with zts}
 # Install ZTS extension
 make -C ZTS install INSTALL_ROOT=%{buildroot}
 
-install -d %{buildroot}%{php_ztsinidir}
-cat << 'EOF' | tee %{buildroot}%{php_ztsinidir}/%{ini_name}
-; Enable xdebug extension module
-zend_extension=%{pecl_name}.so
-
-; see http://xdebug.org/docs/all_settings
-EOF
+install -D -p -m 644 %{ini_name} %{buildroot}%{php_ztsinidir}/%{ini_name}
 %endif
 
 # Documentation
@@ -226,6 +221,7 @@ fi
 - Install package.xml as %%{pecl_name}.xml, not %%{name}.xml
 - Wrap scriptlets in conditionals
 - Don't install/register tests or LICENSE during %%prep
+- Generate ini file during %%prep
 
 * Tue Mar 08 2016 Carl George <carl.george@rackspace.com> - 2.4.0-2.ius
 - Re-add scriptlets, file triggers aren't available in EL version of RPM
