@@ -20,7 +20,7 @@
 Name:           %{php_base}-pecl-xdebug
 Summary:        PECL package for debugging PHP scripts
 Version:        2.4.0
-Release:        2.ius%{?dist}
+Release:        3.ius%{?dist}
 Source0:        http://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
 
 # The Xdebug License, version 1.01
@@ -59,11 +59,9 @@ Provides:       %{php_base}-pecl(Xdebug)%{?_isa} = %{version}
 # conflict with the stock name
 Conflicts:      php-pecl-%{pecl_name} < %{version}
 
-%if 0%{?fedora} < 20 && 0%{?rhel} < 7
-# Filter shared private
-%{?filter_provides_in: %filter_provides_in %{_libdir}/.*\.so$}
+%{?filter_provides_in: %filter_provides_in %{php_extdir}/.*\.so$}
+%{?filter_provides_in: %filter_provides_in %{php_ztsextdir}/.*\.so$}
 %{?filter_setup}
-%endif
 
 
 %description
@@ -212,6 +210,9 @@ fi
 
 
 %changelog
+* Thu Jun 16 2016 Carl George <carl.george@rackspace.com> - 2.4.0-3.ius
+- Clean up auto-provides filters
+
 * Tue Mar 08 2016 Carl George <carl.george@rackspace.com> - 2.4.0-2.ius
 - Re-add scriptlets, file triggers aren't available in EL version of RPM
 
