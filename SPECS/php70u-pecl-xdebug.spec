@@ -93,7 +93,7 @@ sed -e 's/role="test"/role="src"/' \
     -e '/LICENSE/s/role="doc"/role="src"/' \
     -i package.xml
 
-cd NTS
+pushd NTS
 
 # Check extension version
 ver=$(sed -n '/XDEBUG_VERSION/{s/.* "//;s/".*$//;p}' php_xdebug.h)
@@ -102,7 +102,7 @@ if test "$ver" != "%{version}%{?prever}"; then
    exit 1
 fi
 
-cd ..
+popd
 
 %if %{with zts}
 # Duplicate source tree for NTS / ZTS build
@@ -118,7 +118,7 @@ EOF
 
 
 %build
-cd NTS
+pushd NTS
 %{_bindir}/phpize
 %configure \
     --enable-xdebug  \
@@ -132,14 +132,16 @@ pushd debugclient
 %configure --with-libedit
 make %{?_smp_mflags}
 popd
+popd
 
 %if %{with zts}
-cd ../ZTS
+pushd ZTS
 %{_bindir}/zts-phpize
 %configure \
     --enable-xdebug  \
     --with-php-config=%{_bindir}/zts-php-config
 make %{?_smp_mflags}
+popd
 %endif
 
 
