@@ -12,10 +12,11 @@
 #
 
 %global pecl_name xdebug
-%global with_zts  0%{?__ztsphp:1}
 # XDebug should be loaded after opcache
 %global ini_name  15-%{pecl_name}.ini
 %global php_base php70u
+
+%bcond_without zts
 
 Name:           %{php_base}-pecl-xdebug
 Summary:        PECL package for debugging PHP scripts
@@ -98,7 +99,7 @@ fi
 
 cd ..
 
-%if %{with_zts}
+%if %{with zts}
 # Duplicate source tree for NTS / ZTS build
 cp -pr NTS ZTS
 %endif
@@ -120,7 +121,7 @@ pushd debugclient
 make %{?_smp_mflags}
 popd
 
-%if %{with_zts}
+%if %{with zts}
 cd ../ZTS
 %{_bindir}/zts-phpize
 %configure \
@@ -150,7 +151,7 @@ zend_extension=%{pecl_name}.so
 ; see http://xdebug.org/docs/all_settings
 EOF
 
-%if %{with_zts}
+%if %{with zts}
 # Install ZTS extension
 make -C ZTS install INSTALL_ROOT=%{buildroot}
 
@@ -176,7 +177,7 @@ done
     --define zend_extension=%{buildroot}%{php_extdir}/%{pecl_name}.so \
     --modules | grep Xdebug
 
-%if %{with_zts}
+%if %{with zts}
 %{_bindir}/zts-php \
     --no-php-ini \
     --define zend_extension=%{buildroot}%{php_ztsextdir}/%{pecl_name}.so \
@@ -203,7 +204,7 @@ fi
 %config(noreplace) %{php_inidir}/%{ini_name}
 %{php_extdir}/%{pecl_name}.so
 
-%if %{with_zts}
+%if %{with zts}
 %config(noreplace) %{php_ztsinidir}/%{ini_name}
 %{php_ztsextdir}/%{pecl_name}.so
 %endif
