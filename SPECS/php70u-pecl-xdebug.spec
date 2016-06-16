@@ -88,6 +88,11 @@ Xdebug also provides:
 %setup -qc
 mv %{pecl_name}-%{version}%{?prever} NTS
 
+# Don't install/register tests or LICENSE
+sed -e 's/role="test"/role="src"/' \
+    -e '/LICENSE/s/role="doc"/role="src"/' \
+    -i package.xml
+
 cd NTS
 
 # Check extension version
@@ -200,6 +205,7 @@ fi
 
 
 %files
+%{!?_licensedir:%global license %%doc}
 %license NTS/LICENSE
 %doc %{pecl_docdir}/%{pecl_name}
 %{_bindir}/debugclient
@@ -219,6 +225,7 @@ fi
 - Clean up auto-provides filters
 - Install package.xml as %%{pecl_name}.xml, not %%{name}.xml
 - Wrap scriptlets in conditionals
+- Don't install/register tests or LICENSE during %%prep
 
 * Tue Mar 08 2016 Carl George <carl.george@rackspace.com> - 2.4.0-2.ius
 - Re-add scriptlets, file triggers aren't available in EL version of RPM
