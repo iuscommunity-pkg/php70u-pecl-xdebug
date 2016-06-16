@@ -185,14 +185,18 @@ done
 %endif
 
 
+%if 0%{?pecl_install:1}
 %post
 %{pecl_install} %{pecl_xmldir}/%{pecl_name}.xml >/dev/null || :
+%endif
 
 
+%if 0%{?pecl_uninstall:1}
 %postun
 if [ $1 -eq 0 ] ; then
     %{pecl_uninstall} %{pecl_name} >/dev/null || :
 fi
+%endif
 
 
 %files
@@ -214,6 +218,7 @@ fi
 * Thu Jun 16 2016 Carl George <carl.george@rackspace.com> - 2.4.0-3.ius
 - Clean up auto-provides filters
 - Install package.xml as %%{pecl_name}.xml, not %%{name}.xml
+- Wrap scriptlets in conditionals
 
 * Tue Mar 08 2016 Carl George <carl.george@rackspace.com> - 2.4.0-2.ius
 - Re-add scriptlets, file triggers aren't available in EL version of RPM
