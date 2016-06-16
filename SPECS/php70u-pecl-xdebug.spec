@@ -140,7 +140,7 @@ install -Dpm 755 NTS/debugclient/debugclient \
         %{buildroot}%{_bindir}/debugclient
 
 # install package registration file
-install -Dpm 644 package.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
+install -Dpm 644 package.xml %{buildroot}%{pecl_xmldir}/%{pecl_name}.xml
 
 # install config file
 install -d %{buildroot}%{php_inidir}
@@ -186,7 +186,7 @@ done
 
 
 %post
-%{pecl_install} %{pecl_xmldir}/%{name}.xml >/dev/null || :
+%{pecl_install} %{pecl_xmldir}/%{pecl_name}.xml >/dev/null || :
 
 
 %postun
@@ -199,7 +199,7 @@ fi
 %license NTS/LICENSE
 %doc %{pecl_docdir}/%{pecl_name}
 %{_bindir}/debugclient
-%{pecl_xmldir}/%{name}.xml
+%{pecl_xmldir}/%{pecl_name}.xml
 
 %config(noreplace) %{php_inidir}/%{ini_name}
 %{php_extdir}/%{pecl_name}.so
@@ -213,6 +213,7 @@ fi
 %changelog
 * Thu Jun 16 2016 Carl George <carl.george@rackspace.com> - 2.4.0-3.ius
 - Clean up auto-provides filters
+- Install package.xml as %%{pecl_name}.xml, not %%{name}.xml
 
 * Tue Mar 08 2016 Carl George <carl.george@rackspace.com> - 2.4.0-2.ius
 - Re-add scriptlets, file triggers aren't available in EL version of RPM
