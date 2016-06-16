@@ -172,13 +172,13 @@ done
 
 %check
 # only check if build extension can be loaded
-%{_bindir}/php \
+%{__php} \
     --no-php-ini \
     --define zend_extension=%{buildroot}%{php_extdir}/%{pecl_name}.so \
     --modules | grep Xdebug
 
 %if %{with zts}
-%{_bindir}/zts-php \
+%{__ztsphp} \
     --no-php-ini \
     --define zend_extension=%{buildroot}%{php_ztsextdir}/%{pecl_name}.so \
     --modules | grep Xdebug
