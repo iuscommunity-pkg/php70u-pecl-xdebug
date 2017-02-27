@@ -112,6 +112,7 @@ zend_extension=%{pecl_name}.so
 
 ; see http://xdebug.org/docs/all_settings
 EOF
+sed -e '1d' NTS/%{pecl_name}.ini >> %{ini_name}
 
 
 %build
@@ -209,6 +210,7 @@ fi
 %changelog
 * Mon Feb 27 2017 Carl George <carl.george@rackspace.com> - 2.5.1-1.ius
 - Latest upstream
+- Use uptream provided configuration with all settings (Fedora)
 
 * Mon Dec 05 2016 Ben Harper <ben.harper@rackspace.com> - 2.5.0-1.ius
 - Latest upstream
