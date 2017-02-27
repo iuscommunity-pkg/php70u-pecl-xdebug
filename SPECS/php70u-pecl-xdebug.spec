@@ -14,7 +14,7 @@
 %global pecl_name xdebug
 # XDebug should be loaded after opcache
 %global ini_name  15-%{pecl_name}.ini
-%global php_base php70u
+%global php_base  php70u
 
 %bcond_without zts
 
@@ -22,7 +22,7 @@ Name:           %{php_base}-pecl-xdebug
 Summary:        PECL package for debugging PHP scripts
 Version:        2.5.0
 Release:        1.ius%{?dist}
-Source0:        http://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
+Source0:        http://pecl.php.net/get/%{pecl_name}-%{version}.tgz
 
 # The Xdebug License, version 1.01
 # (Based on "The PHP License", version 3.0)
@@ -86,19 +86,16 @@ Xdebug also provides:
 
 %prep
 %setup -qc
-mv %{pecl_name}-%{version}%{?prever} NTS
+mv %{pecl_name}-%{version} NTS
 
-# Don't install/register tests or LICENSE
-sed -e 's/role="test"/role="src"/' \
-    -e '/LICENSE/s/role="doc"/role="src"/' \
-    -i package.xml
+sed -e '/LICENSE/s/role="doc"/role="src"/' -i package.xml
 
 pushd NTS
 
 # Check extension version
 ver=$(sed -n '/XDEBUG_VERSION/{s/.* "//;s/".*$//;p}' php_xdebug.h)
-if test "$ver" != "%{version}%{?prever}"; then
-   : Error: Upstream XDEBUG_VERSION version is ${ver}, expecting %{version}%{?prever}.
+if test "$ver" != "%{version}"; then
+   : Error: Upstream XDEBUG_VERSION version is ${ver}, expecting %{version}.
    exit 1
 fi
 
@@ -148,6 +145,7 @@ popd
 %install
 # install NTS extension
 make -C NTS install INSTALL_ROOT=%{buildroot}
+install -Dpm 644 %{ini_name} %{buildroot}%{php_inidir}/%{ini_name}
 
 # install debugclient
 install -Dpm 755 NTS/debugclient/debugclient \
@@ -156,14 +154,10 @@ install -Dpm 755 NTS/debugclient/debugclient \
 # install package registration file
 install -Dpm 644 package.xml %{buildroot}%{pecl_xmldir}/%{pecl_name}.xml
 
-# install config file
-install -Dpm 644 %{ini_name} %{buildroot}%{php_inidir}/%{ini_name}
-
 %if %{with zts}
 # Install ZTS extension
 make -C ZTS install INSTALL_ROOT=%{buildroot}
-
-install -D -p -m 644 %{ini_name} %{buildroot}%{php_ztsinidir}/%{ini_name}
+install -Dpm 644 %{ini_name} %{buildroot}%{php_ztsinidir}/%{ini_name}
 %endif
 
 # Documentation
@@ -187,22 +181,17 @@ done
 %endif
 
 
-%if 0%{?pecl_install:1}
 %post
 %{pecl_install} %{pecl_xmldir}/%{pecl_name}.xml >/dev/null || :
-%endif
 
 
-%if 0%{?pecl_uninstall:1}
 %postun
-if [ $1 -eq 0 ] ; then
+if [ $1 -eq 0 ]; then
     %{pecl_uninstall} %{pecl_name} >/dev/null || :
 fi
-%endif
 
 
 %files
-%{!?_licensedir:%global license %%doc}
 %license NTS/LICENSE
 %doc %{pecl_docdir}/%{pecl_name}
 %{_bindir}/debugclient
